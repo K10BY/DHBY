@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QUẢN LÝ LỚP HỌC TRƯỜNG THPT BÌNH YÊN</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; margin: 0; background-color: #f4f4f4; }
+    header { background-color: #007BFF; color: #fff; text-align: center; padding: 1rem; }
+    nav { background-color: #343a40; }
+    nav ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; }
+    nav ul li { flex: 1; }
+    nav ul li button { width: 100%; padding: 0.75rem; border: none; background-color: transparent; color: #fff; cursor: pointer; outline: none; transition: background 0.2s; }
+    nav ul li button:hover, nav ul li button.active { background-color: #495057; }
+    main { padding: 1rem; }
+    .tab-content { display: none; background-color: #fff; padding: 1rem; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 1rem; }
+    .tab-content.active { display: block; }
+    h2 { margin-top: 0; }
+    .action-buttons { margin-bottom: 1rem; }
+    .action-buttons button { margin-right: 0.5rem; margin-bottom: 0.5rem; padding: 0.5rem 0.75rem; border: none; background-color: #007BFF; color: #fff; border-radius: 3px; cursor: pointer; }
+    .action-buttons button.export-word { background-color: #28a745; }
+    .action-buttons button.export-excel { background-color: #ffc107; color: #000; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 0.75rem; border: 1px solid #ddd; text-align: left; }
+    tr.selected { background-color: #e0f0ff; }
+    .form-popup { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.3); justify-content: center; align-items: center; }
+    .form-inner { background: #fff; padding: 1.5rem; border-radius: 8px; min-width: 260px; min-height: 70px; }
+    .form-inner input, .form-inner select { width: 100%; margin-bottom: 1rem; padding: 0.5rem; }
+    .form-inner button { margin-right: 0.5rem; }
+    @media (max-width: 600px) {
+      nav ul { flex-direction: column; }
+      .form-inner { min-width: 90vw; }
+      table, th, td { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>QUẢN LÝ LỚP HỌC TRƯỜNG THPT BÌNH YÊN</h1>
+  </header>
+
+  <nav>
+    <ul>
+      <li><button class="active" onclick="showTab('danh-sach-lop', this)">Danh sách lớp</button></li>
+      <li><button onclick="showTab('khen-thuong', this)">Khen thưởng</button></li>
+      <li><button onclick="showTab('ky-luat', this)">Kỷ luật</button></li>
+      <li><button onclick="showTab('vi-pham', this)">Danh sách vi phạm</button></li>
+      <li><button onclick="showTab('giao-luu', this)">Giao lưu học tập</button></li>
+    </ul>
+  </nav>
+
+  <main>
+    <!-- Danh sách lớp -->
+    <div id="danh-sach-lop" class="tab-content active">
+      <h2>Danh sách lớp</h2>
+      <div class="action-buttons">
+        <button onclick="showForm('lop', 'add')">Thêm</button>
+        <button onclick="editRow('lop')">Sửa</button>
+        <button onclick="deleteRow('lop')">Xoá</button>
+        <button class="export-word" onclick="exportTable('lop','word')">Kết xuất Word</button>
+        <button class="export-excel" onclick="exportTable('lop','excel')">Kết xuất Excel</button>
+      </div>
+      <table id="table-lop">
+        <thead>
+          <tr>
+            <th>Mã lớp</th>
+            <th>Tên lớp</th>
+            <th>Sĩ số</th>
+            <th>Giáo viên chủ nhiệm</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Khen thưởng -->
+    <div id="khen-thuong" class="tab-content">
+      <h2>Khen thưởng</h2>
+      <div class="action-buttons">
+        <button onclick="showForm('khen', 'add')">Thêm</button>
+        <button onclick="editRow('khen')">Sửa</button>
+        <button onclick="deleteRow('khen')">Xoá</button>
+        <button class="export-word" onclick="exportTable('khen','word')">Kết xuất Word</button>
+        <button class="export-excel" onclick="exportTable('khen','excel')">Kết xuất Excel</button>
+      </div>
+      <table id="table-khen">
+        <thead>
+          <tr>
+            <th>Mã học sinh</th>
+            <th>Họ và tên</th>
+            <th>Lớp</th>
+            <th>Hình thức khen thưởng</th>
+            <th>Nội dung</th>
+            <th>Ngày khen thưởng</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Kỷ luật -->
+    <div id="ky-luat" class="tab-content">
+      <h2>Kỷ luật</h2>
+      <div class="action-buttons">
+        <button onclick="showForm('kyluat', 'add')">Thêm</button>
+        <button onclick="editRow('kyluat')">Sửa</button>
+        <button onclick="deleteRow('kyluat')">Xoá</button>
+        <button class="export-word" onclick="exportTable('kyluat','word')">Kết xuất Word</button>
+        <button class="export-excel" onclick="exportTable('kyluat','excel')">Kết xuất Excel</button>
+      </div>
+      <table id="table-kyluat">
+        <thead>
+          <tr>
+            <th>Mã học sinh</th>
+            <th>Họ và tên</th>
+            <th>Lớp</th>
+            <th>Hình thức kỷ luật</th>
+            <th>Nội dung</th>
+            <th>Ngày kỷ luật</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Vi phạm -->
+    <div id="vi-pham" class="tab-content">
+      <h2>Danh sách vi phạm</h2>
+      <div style="margin-bottom: 1rem;">
+        <label for="filter">Lọc theo: </label>
+        <select id="filter" onchange="alert('Chức năng lọc: ' + this.value)">
+          <option value="ngay">Ngày</option>
+          <option value="tuan">Tuần</option>
+          <option value="thang">Tháng</option>
+          <option value="quy">Quý</option>
+          <option value="nam">Năm</option>
+        </select>
+      </div>
+      <div class="action-buttons">
+        <button onclick="showForm('vipham', 'add')">Thêm</button>
+        <button onclick="editRow('vipham')">Sửa</button>
+        <button onclick="deleteRow('vipham')">Xoá</button>
+        <button class="export-word" onclick="exportTable('vipham','word')">Kết xuất Word</button>
+        <button class="export-excel" onclick="exportTable('vipham','excel')">Kết xuất Excel</button>
+      </div>
+      <table id="table-vipham">
+        <thead>
+          <tr>
+            <th>Mã vi phạm</th>
+            <th>Họ và tên</th>
+            <th>Lớp</th>
+            <th>Vi phạm gì</th>
+            <th>Ngày vi phạm</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Giao lưu -->
+    <div id="giao-luu" class="tab-content">
+      <h2>Giao lưu học tập</h2>
+      <div class="action-buttons">
+        <button onclick="showForm('giaoluu', 'add')">Thêm</button>
+        <button onclick="editRow('giaoluu')">Sửa</button>
+        <button onclick="deleteRow('giaoluu')">Xoá</button>
+        <button class="export-word" onclick="exportTable('giaoluu','word')">Kết xuất Word</button>
+        <button class="export-excel" onclick="exportTable('giaoluu','excel')">Kết xuất Excel</button>
+      </div>
+      <table id="table-giaoluu">
+        <thead>
+          <tr>
+            <th>Mã bài</th>
+            <th>Tiêu đề</th>
+            <th>Tác giả</th>
+            <th>Ngày đăng</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Popup form nhập liệu -->
+  <div id="form-popup" class="form-popup">
+    <div class="form-inner" id="form-inner">
+      <!-- Nội dung form sẽ được thêm bằng JS -->
+    </div>
+  </div>
+
+  <script>
+    // Các mẫu cột cho từng bảng
+    const columns = {
+      lop: ['Mã lớp','Tên lớp','Sĩ số','Giáo viên chủ nhiệm'],
+      khen: ['Mã học sinh','Họ và tên','Lớp','Hình thức khen thưởng','Nội dung','Ngày khen thưởng'],
+      kyluat: ['Mã học sinh','Họ và tên','Lớp','Hình thức kỷ luật','Nội dung','Ngày kỷ luật'],
+      vipham: ['Mã vi phạm','Họ và tên','Lớp','Vi phạm gì','Ngày vi phạm'],
+      giaoluu: ['Mã bài','Tiêu đề','Tác giả','Ngày đăng']
+    };
+
+    // Dữ liệu mặc định
+    const defaultData = {
+      lop: [
+        ["L01","10A1","40","Nguyễn Văn A"],
+        ["L02","10A2","38","Trần Thị B"]
+      ],
+      khen: [
+        ["HS01","Nguyễn Văn C","10A1","Hạnh kiểm tốt","Khen vì thành tích học tập xuất sắc","2025-04-20"]
+      ],
+      kyluat: [
+        ["HS02","Trần Văn D","10A2","Cảnh cáo","Vi phạm nội quy trường","2025-04-22"]
+      ],
+      vipham: [
+        ["VP01","Lê Thị E","10A1","Đi muộn","2025-04-23"]
+      ],
+      giaoluu: [
+        ["B01","Chia sẻ kinh nghiệm học tập","Học sinh 10A1","2025-04-25"]
+      ]
+    };
+
+    // Lưu dữ liệu vào Local Storage
+    function saveData(type, data) {
+      localStorage.setItem("qlthpt_" + type, JSON.stringify(data));
+    }
+
+    // Lấy dữ liệu từ Local Storage
+    function loadData(type) {
+      let data = localStorage.getItem("qlthpt_" + type);
+      if (data) {
+        try { return JSON.parse(data); }
+        catch { return []; }
+      } else {
+        return defaultData[type] ? JSON.parse(JSON.stringify(defaultData[type])) : [];
+      }
+    }
+
+    // Hiển thị dữ liệu lên bảng
+    function renderTable(type) {
+      let table = document.getElementById('table-' + type).tBodies[0];
+      table.innerHTML = '';
+      let data = loadData(type);
+      data.forEach(row => {
+        let tr = table.insertRow();
+        row.forEach(cell => {
+          let td = tr.insertCell();
+          td.textContent = cell;
+        });
+      });
+    }
+
+    // Khi tải xong trang: render lại tất cả bảng
+    document.addEventListener('DOMContentLoaded', function() {
+      ['lop', 'khen', 'kyluat', 'vipham', 'giaoluu'].forEach(function(type) {
+        renderTable(type);
+
+        // Gán sự kiện chọn dòng cho từng bảng
+        let table = document.getElementById('table-' + type);
+        table.addEventListener('click', function(e) {
+          let tr = e.target.closest('tr');
+          if (!tr || !tr.parentNode || tr.parentNode.nodeName !== 'TBODY') return;
+          [...table.tBodies[0].rows].forEach(row => row.classList.remove('selected'));
+          tr.classList.add('selected');
+        });
+      });
+    });
+
+    // Quản lý tab
+    function showTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('nav ul li button').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      if (btn) btn.classList.add('active');
+      // Reset dòng chọn khi chuyển tab
+      document.querySelectorAll('.selected').forEach(row => row.classList.remove('selected'));
+    }
+
+    // Hiện popup form để thêm/sửa dữ liệu
+    function showForm(type, mode, values=[]) {
+      const form = document.getElementById('form-popup');
+      const inner = document.getElementById('form-inner');
+      let html = `<h3>${mode==='add'?'Thêm mới':'Sửa'} ${getSectionName(type)}</h3><form id="edit-form">`;
+      columns[type].forEach((col, i) => {
+        let val = values[i] || '';
+        let inputType = (col.toLowerCase().includes('ngày')) ? 'date' : 'text';
+        html += `
+          <label>${col}</label>
+          <input type="${inputType}" name="col${i}" value="${inputType==='date' && val ? val : val}">
+        `;
+      });
+      html += `<button type="submit">${mode==='add'?'Thêm':'Lưu'}</button>
+               <button type="button" onclick="closeForm()">Hủy</button>
+               </form>`;
+      inner.innerHTML = html;
+      form.style.display = 'flex';
+
+      document.getElementById('edit-form').onsubmit = function(e) {
+        e.preventDefault();
+        let data = columns[type].map((col, i) => this['col'+i].value.trim());
+        if (mode === 'add') {
+          addRow(type, data);
+        } else {
+          updateRow(type, data);
+        }
+        closeForm();
+      }
+    }
+    function closeForm() {
+      document.getElementById('form-popup').style.display = 'none';
+    }
+    function getSectionName(type) {
+      return {
+        lop: 'lớp học',
+        khen: 'khen thưởng',
+        kyluat: 'kỷ luật',
+        vipham: 'vi phạm',
+        giaoluu: 'bài giao lưu'
+      }[type] || '';
+    }
+
+    // Thêm dòng mới vào bảng và lưu vào LocalStorage
+    function addRow(type, data) {
+      let table = document.getElementById('table-' + type).tBodies[0];
+      let tr = table.insertRow();
+      data.forEach(val => {
+        let td = tr.insertCell();
+        td.textContent = val;
+      });
+      let all = loadData(type);
+      all.push(data);
+      saveData(type, all);
+    }
+
+    // Sửa dòng được chọn
+    function editRow(type) {
+      let table = document.getElementById('table-' + type).tBodies[0];
+      let selected = table.querySelector('.selected');
+      if (!selected) { alert('Vui lòng chọn một dòng để sửa!'); return; }
+      let values = [...selected.cells].map(td => td.textContent);
+      showForm(type, 'edit', values);
+      window._editingRow = selected;
+      window._editingType = type;
+    }
+
+    // Lưu dữ liệu sau khi sửa và cập nhật LocalStorage
+    function updateRow(type, data) {
+      let tr = window._editingRow;
+      if (!tr) return;
+      data.forEach((val, i) => tr.cells[i].textContent = val);
+
+      // Cập nhật vào localStorage
+      let table = document.getElementById('table-' + type).tBodies[0];
+      let rows = [...table.rows].map(row => [...row.cells].map(cell => cell.textContent));
+      saveData(type, rows);
+
+      window._editingRow = null;
+      window._editingType = null;
+    }
+
+    // Xoá dòng được chọn và cập nhật LocalStorage
+    function deleteRow(type) {
+      let table = document.getElementById('table-' + type).tBodies[0];
+      let selected = table.querySelector('.selected');
+      if (!selected) { alert('Vui lòng chọn một dòng để xoá!'); return; }
+      if (confirm('Bạn chắc chắn muốn xoá dòng này?')) {
+        table.removeChild(selected);
+        // Cập nhật vào localStorage
+        let rows = [...table.rows].map(row => [...row.cells].map(cell => cell.textContent));
+        saveData(type, rows);
+      }
+    }
+
+    // Kết xuất bảng sang Word hoặc Excel
+    function exportTable(type, format) {
+      let table = document.getElementById('table-' + type);
+      let html = '<html><head><meta charset="UTF-8"></head><body>' +
+                 table.outerHTML + '</body></html>';
+      let blob, url, filename;
+      if (format === 'word') {
+        blob = new Blob([html], {type: 'application/msword'});
+        filename = getSectionName(type) + '.doc';
+      } else {
+        // Excel chỉ cần html table là đủ!
+        blob = new Blob([html], {type: 'application/vnd.ms-excel'});
+        filename = getSectionName(type) + '.xls';
+      }
+      if (window.navigator.msSaveOrOpenBlob) {
+        window.navigator.msSaveOrOpenBlob(blob, filename);
+      } else {
+        url = URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(()=>{document.body.removeChild(a); window.URL.revokeObjectURL(url);}, 0);
+      }
+    }
+  </script>
+</body>
+</html>
